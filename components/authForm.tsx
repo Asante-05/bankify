@@ -17,7 +17,7 @@ import CustomInput from './customInput'
 import { authformSchema } from '@/lib/utils'
 import { Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { signIn, signUp } from '@/lib/actions/user.actions'
+import { getLoggedInUser, signIn, signUp } from '@/lib/actions/user.actions'
 
 
 
@@ -25,6 +25,7 @@ function AuthForm({ type }: { type: string }) {
     const router = useRouter()
     const [user, setUser] = useState()
     const [isloading, setIsLoading] = useState(false)
+    
 
     const formschema = authformSchema(type)
 
@@ -37,15 +38,14 @@ function AuthForm({ type }: { type: string }) {
 
     // 2. Define a submit handler.
     const  onSubmit = async(data: z.infer<typeof formschema>) => {
-        
         setIsLoading(true)
         try{
             // sign Up with Appwrite & create a plain token
-            if (type==='sing-up'){
+            if (type==='sign-up'){
                 const newUser = await signUp(data);
                 setUser(newUser)
             }
-            if (type==='sing-in'){
+            if (type==='sign-in'){
                 const response = await signIn({
                     email: data.email,
                     password: data.password,
@@ -55,7 +55,7 @@ function AuthForm({ type }: { type: string }) {
         }catch(error){
             console.log(error)
         }finally{
-
+            
         }
         setIsLoading(false)
     
@@ -126,7 +126,9 @@ function AuthForm({ type }: { type: string }) {
                                 <CustomInput control={form.control} name='password' label='Password' placeholder='Enter your password' />
 
                                 <div className='flex flex-col gap-4'>
-                                    <Button type="submit" disabled={isloading}
+                                    <Button type="submit" 
+                                    disabled={isloading}
+                                    
                                         className='form-btn'>{
                                             isloading
                                                 ?
